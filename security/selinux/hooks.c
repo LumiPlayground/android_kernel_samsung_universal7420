@@ -96,14 +96,11 @@
 #include "audit.h"
 #include "avc_ss.h"
 
-#ifdef CONFIG_RKP_NS_PROT
-extern unsigned int cmp_ns_integrity(void);
-#else
 unsigned int cmp_ns_integrity(void)
 {
 	return 0;
 }
-#endif
+
 #define NUM_SEL_MNT_OPTS 5
 
 #ifdef CONFIG_RKP_KDP

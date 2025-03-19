@@ -1452,9 +1452,7 @@ static void setup_object(struct kmem_cache *s, struct page *page,
 	if (unlikely(s->ctor))
 		s->ctor(object);
 }
-#ifdef CONFIG_RKP_DMAP_PROT
-extern u8 rkp_started;
-#endif
+
 static struct page *new_slab(struct kmem_cache *s, gfp_t flags, int node)
 {
 	struct page *page;
@@ -1491,12 +1489,6 @@ static struct page *new_slab(struct kmem_cache *s, gfp_t flags, int node)
 	}
 	setup_object(s, page, last);
 	set_freepointer(s, last, NULL);
-#ifdef CONFIG_RKP_DMAP_PROT
-	if(rkp_cred_enable && rkp_started) {
-		rkp_call(RKP_CMDID(0x4a),page_to_phys(page),compound_order(page),
-			1,(unsigned long) __pa(rkp_map_bitmap),0);
-	}
-#endif
 	page->freelist = start;
 	page->inuse = page->objects;
 	page->frozen = 1;
@@ -1531,13 +1523,6 @@ static void __free_slab(struct kmem_cache *s, struct page *page)
 {
 	int order = compound_order(page);
 	int pages = 1 << order;
-
-#ifdef CONFIG_RKP_DMAP_PROT
-	if(rkp_cred_enable && rkp_started) {
-		rkp_call(RKP_CMDID(0x4a),page_to_phys(page),compound_order(page),
-			0,(unsigned long)__pa(rkp_map_bitmap),0);
-	}
-#endif
 
 	if (kmem_cache_debug(s)) {
 		void *p;

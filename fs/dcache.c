@@ -39,9 +39,6 @@
 #include <linux/ratelimit.h>
 #include "internal.h"
 #include "mount.h"
-#ifdef CONFIG_RKP_NS_PROT
-u8 ns_prot = 0;
-#endif
 
 /*
  * Usage:
@@ -2697,11 +2694,7 @@ static int prepend_path(const struct path *path,
 				goto global_root;
 			dentry = mnt->mnt_mountpoint;
 			mnt = mnt->mnt_parent;
-#ifdef CONFIG_RKP_NS_PROT
-			vfsmnt = mnt->mnt;
-#else
 			vfsmnt = &mnt->mnt;
-#endif
 			continue;
 		}
 		parent = dentry->d_parent;
@@ -3280,7 +3273,4 @@ void __init vfs_caches_init(unsigned long mempages)
 	mnt_init();
 	bdev_cache_init();
 	chrdev_init();
-#ifdef CONFIG_RKP_NS_PROT
-	ns_prot = 1;
-#endif
 }
